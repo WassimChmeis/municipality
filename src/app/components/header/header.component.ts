@@ -1,0 +1,151 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { DataService } from '../../services/data.service';
+
+@Component({
+  selector: 'app-header',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  template: `
+    <header class="bg-white shadow-lg sticky top-0 z-50">
+      <!-- Top Bar -->
+      <div class="bg-green-600 text-white py-2">
+        <div class="container mx-auto px-4 flex justify-between items-center text-sm">
+          <div class="flex items-center space-x-4">
+            <span>📞 +961 1 234567</span>
+            <span>✉️ info&#64;kefraya.gov.lb</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button 
+              (click)="setLanguage('en')"
+              [class]="currentLanguage === 'en' ? 'font-bold' : ''"
+              class="hover:text-green-200">EN</button>
+            <span>|</span>
+            <button 
+              (click)="setLanguage('ar')"
+              [class]="currentLanguage === 'ar' ? 'font-bold' : ''"
+              class="hover:text-green-200">العربية</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Navigation -->
+      <nav class="container mx-auto px-4 py-4">
+        <div class="flex items-center justify-between">
+          <!-- Logo and Title -->
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+              <span class="text-white font-bold text-xl">K</span>
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold text-gray-800">
+                {{ currentLanguage === 'ar' ? 'بلدية كفريا' : 'Kefraya Municipality' }}
+              </h1>
+              <p class="text-sm text-gray-600">
+                {{ currentLanguage === 'ar' ? 'خدمة المجتمع والتطوير' : 'Serving Community & Development' }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Desktop Navigation -->
+          <div class="hidden md:flex items-center space-x-6">
+            <a routerLink="/" 
+               class="text-gray-700 hover:text-green-600 font-medium transition-colors"
+               routerLinkActive="text-green-600 font-bold">
+              {{ currentLanguage === 'ar' ? 'الرئيسية' : 'Home' }}
+            </a>
+            <a routerLink="/news" 
+               class="text-gray-700 hover:text-green-600 font-medium transition-colors"
+               routerLinkActive="text-green-600 font-bold">
+              {{ currentLanguage === 'ar' ? 'الأخبار والأحداث' : 'News & Events' }}
+            </a>
+            <a routerLink="/committee" 
+               class="text-gray-700 hover:text-green-600 font-medium transition-colors"
+               routerLinkActive="text-green-600 font-bold">
+              {{ currentLanguage === 'ar' ? 'البلدية واللجنة' : 'Municipality & Committee' }}
+            </a>
+            <a routerLink="/complaints" 
+               class="text-gray-700 hover:text-green-600 font-medium transition-colors"
+               routerLinkActive="text-green-600 font-bold">
+              {{ currentLanguage === 'ar' ? 'الشكاوى والاقتراحات' : 'Complaints & Wishlist' }}
+            </a>
+            <a routerLink="/donations" 
+               class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 font-medium transition-colors">
+              {{ currentLanguage === 'ar' ? 'التبرعات' : 'Donations' }}
+            </a>
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <button 
+            (click)="toggleMobileMenu()"
+            class="md:hidden text-gray-700 hover:text-green-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div *ngIf="isMobileMenuOpen" class="md:hidden mt-4 py-4 border-t border-gray-200">
+          <div class="flex flex-col space-y-3">
+            <a routerLink="/" 
+               (click)="closeMobileMenu()"
+               class="text-gray-700 hover:text-green-600 font-medium transition-colors py-2"
+               routerLinkActive="text-green-600 font-bold">
+              {{ currentLanguage === 'ar' ? 'الرئيسية' : 'Home' }}
+            </a>
+            <a routerLink="/news" 
+               (click)="closeMobileMenu()"
+               class="text-gray-700 hover:text-green-600 font-medium transition-colors py-2"
+               routerLinkActive="text-green-600 font-bold">
+              {{ currentLanguage === 'ar' ? 'الأخبار والأحداث' : 'News & Events' }}
+            </a>
+            <a routerLink="/committee" 
+               (click)="closeMobileMenu()"
+               class="text-gray-700 hover:text-green-600 font-medium transition-colors py-2"
+               routerLinkActive="text-green-600 font-bold">
+              {{ currentLanguage === 'ar' ? 'البلدية واللجنة' : 'Municipality & Committee' }}
+            </a>
+            <a routerLink="/complaints" 
+               (click)="closeMobileMenu()"
+               class="text-gray-700 hover:text-green-600 font-medium transition-colors py-2"
+               routerLinkActive="text-green-600 font-bold">
+              {{ currentLanguage === 'ar' ? 'الشكاوى والاقتراحات' : 'Complaints & Wishlist' }}
+            </a>
+            <a routerLink="/donations" 
+               (click)="closeMobileMenu()"
+               class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 font-medium transition-colors text-center">
+              {{ currentLanguage === 'ar' ? 'التبرعات' : 'Donations' }}
+            </a>
+          </div>
+        </div>
+      </nav>
+    </header>
+  `
+})
+export class HeaderComponent implements OnInit {
+  currentLanguage = 'en';
+  isMobileMenuOpen = false;
+
+  constructor(private dataService: DataService) {}
+
+  ngOnInit() {
+    this.dataService.getCurrentLanguage().subscribe(lang => {
+      this.currentLanguage = lang;
+    });
+  }
+
+  setLanguage(language: string) {
+    this.dataService.setLanguage(language);
+  }
+
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
+  closeMobileMenu() {
+    this.isMobileMenuOpen = false;
+  }
+} 

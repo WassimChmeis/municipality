@@ -1,0 +1,112 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { DataService } from '../../services/data.service';
+
+@Component({
+  selector: 'app-news',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div class="min-h-screen py-8">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+          <h1 class="text-4xl font-bold text-gray-800 mb-4">
+            {{ currentLanguage === 'ar' ? 'الأخبار والأحداث' : 'News & Events' }}
+          </h1>
+          <p class="text-gray-600 max-w-2xl mx-auto">
+            {{ currentLanguage === 'ar' ? 'ابقوا على اطلاع بآخر أخبار وأحداث قريتنا' : 'Stay updated with the latest news and events from our village' }}
+          </p>
+        </div>
+
+        <!-- News Section -->
+        <section class="mb-16">
+          <h2 class="text-2xl font-bold text-gray-800 mb-8">
+            {{ currentLanguage === 'ar' ? 'آخر الأخبار' : 'Latest News' }}
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div *ngFor="let news of newsItems" 
+                 class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              <div class="h-48 bg-gradient-to-r from-green-400 to-blue-400 flex items-center justify-center">
+                <span class="text-white text-6xl">📰</span>
+              </div>
+              <div class="p-6">
+                <div class="flex items-center mb-2">
+                  <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium">
+                    {{ getCategoryLabel(news.category) }}
+                  </span>
+                  <span class="text-gray-500 text-sm ml-auto">{{ news.date }}</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">
+                  {{ currentLanguage === 'ar' ? news.titleAr : news.title }}
+                </h3>
+                <p class="text-gray-600">
+                  {{ currentLanguage === 'ar' ? news.contentAr : news.content }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Events Section -->
+        <section>
+          <h2 class="text-2xl font-bold text-gray-800 mb-8">
+            {{ currentLanguage === 'ar' ? 'الأحداث القادمة' : 'Upcoming Events' }}
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div *ngFor="let event of events" 
+                 class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+              <div class="flex items-start space-x-4">
+                <div class="text-4xl">📅</div>
+                <div class="flex-1">
+                  <h3 class="text-xl font-bold text-gray-800 mb-2">
+                    {{ currentLanguage === 'ar' ? event.titleAr : event.title }}
+                  </h3>
+                  <p class="text-gray-600 mb-3">
+                    {{ currentLanguage === 'ar' ? event.descriptionAr : event.description }}
+                  </p>
+                  <div class="flex flex-col space-y-1 text-sm text-gray-500">
+                    <div class="flex items-center">
+                      <span class="w-4 h-4 mr-2">📅</span>
+                      {{ event.date }} at {{ event.time }}
+                    </div>
+                    <div class="flex items-center">
+                      <span class="w-4 h-4 mr-2">📍</span>
+                      {{ currentLanguage === 'ar' ? event.locationAr || event.location : event.location }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  `
+})
+export class NewsComponent implements OnInit {
+  currentLanguage = 'en';
+  newsItems: any[] = [];
+  events: any[] = [];
+
+  constructor(private dataService: DataService) {}
+
+  ngOnInit() {
+    this.dataService.getCurrentLanguage().subscribe(lang => {
+      this.currentLanguage = lang;
+    });
+
+    this.newsItems = this.dataService.getNews();
+    this.events = this.dataService.getEvents();
+  }
+
+  getCategoryLabel(category: string): string {
+    const labels: any = {
+      'news': this.currentLanguage === 'ar' ? 'خبر' : 'News',
+      'announcement': this.currentLanguage === 'ar' ? 'إعلان' : 'Announcement',
+      'event': this.currentLanguage === 'ar' ? 'حدث' : 'Event'
+    };
+    return labels[category] || category;
+  }
+} 
