@@ -35,8 +35,10 @@ import { DataService } from '../../services/data.service';
         <div class="flex items-center justify-between">
           <!-- Logo and Title -->
           <div class="flex items-center space-x-3">
-            <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
-              <span class="text-white font-bold text-xl">K</span>
+            <div class="w-16 h-16 flex items-center justify-center">
+              <img src="assets/logos/baladeya-logo.jpg" 
+                   alt="Kefraya Municipality Logo" 
+                   class="w-full h-full object-contain rounded-lg shadow-sm">
             </div>
             <div>
               <h1 class="text-2xl font-bold text-gray-800">
